@@ -70,7 +70,7 @@ jobs:
         tag_name: ${{ steps.tag.outputs.tag_name }}
         make_latest: true
         draft: false
-        prerelease: false
+        prerelease: ${{ github.ref_name != 'main' }}
         repository: rabilrbl/dropbear-mipsel
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
