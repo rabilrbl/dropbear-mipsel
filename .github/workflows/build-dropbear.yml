@@ -20,7 +20,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y wget build-essential
+        sudo apt-get install -y wget build-essential libc6-dev binutils libmpc-dev
 
     - name: Download and extract MIPS toolchain
       run: |
@@ -36,7 +36,7 @@ jobs:
 
     - name: Build Dropbear
       run: |
-        CC=${CROSS_COMPILE}gcc SCPPROGRESS=1 MULTI=1 PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp" ./configure --host=mipsel-buildroot-linux-uclibc --prefix=/usr --disable-zlib
+        CC=${CROSS_COMPILE}gcc SCPPROGRESS=1 MULTI=1 PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp" ./configure --host=mipsel-buildroot-linux-uclibc --prefix=/usr --disable-zlib || cat config.log
         make CC=${CROSS_COMPILE}gcc SCPPROGRESS=1 MULTI=1 PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp"
 
     - name: Archive built binaries
