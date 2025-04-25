@@ -37,7 +37,7 @@ jobs:
         echo "LD_LIBRARY_PATH=$(pwd)/buildroot-toolchain-mips32r2el/usr/lib" >> $GITHUB_ENV
         echo "$(pwd)/buildroot-toolchain-mips32r2el/usr/bin" >> $GITHUB_PATH
         echo "CROSS_COMPILE=mipsel-buildroot-linux-uclibc-" >> $GITHUB_ENV
-        echo "CFLAGS=-Os -DLTC_NO_BSWAP -std=c99" >> $GITHUB_ENV
+        echo "CFLAGS=-DLTC_NO_BSWAP" >> $GITHUB_ENV
 
     - name: Build Dropbear
       run: |
