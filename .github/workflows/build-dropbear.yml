@@ -27,14 +27,15 @@ jobs:
 
     - name: Download and extract MIPS toolchain
       run: |
-        wget https://github.com/JFC-Group/JF-Buildroot/releases/download/2015.08.1/mipsel-buildroot-linux-uclibc-toolchain-2015.08.1.tar
-        tar -xf mipsel-buildroot-linux-uclibc-toolchain-2015.08.1.tar
+        wget https://github.com/rabilrbl/buildroot-jiofiber-toolchain/releases/latest/download/buildroot-toolchain-mips32r2el.tar.gz
+        mkdir -p buildroot-toolchain-mips32r2el
+        tar -xzf buildroot-toolchain-mips32r2el.tar.gz -C buildroot-toolchain-mips32r2el
 
     - name: Set environment variables
       run: |
-        echo "TOOLCHAIN_DIR=$(pwd)/mipsel-buildroot-linux-uclibc-toolchain-2015.08.1/usr" >> $GITHUB_ENV
-        echo "LD_LIBRARY_PATH=$(pwd)/mipsel-buildroot-linux-uclibc-toolchain-2015.08.1/usr/lib" >> $GITHUB_ENV
-        echo "$(pwd)/mipsel-buildroot-linux-uclibc-toolchain-2015.08.1/usr/bin" >> $GITHUB_PATH
+        echo "TOOLCHAIN_DIR=$(pwd)/buildroot-toolchain-mips32r2el/usr" >> $GITHUB_ENV
+        echo "LD_LIBRARY_PATH=$(pwd)/buildroot-toolchain-mips32r2el/usr/lib" >> $GITHUB_ENV
+        echo "$(pwd)/buildroot-toolchain-mips32r2el/usr/bin" >> $GITHUB_PATH
         echo "CROSS_COMPILE=mipsel-buildroot-linux-uclibc-" >> $GITHUB_ENV
         echo "CFLAGS=-Os -DLTC_NO_BSWAP -std=c99" >> $GITHUB_ENV
 
