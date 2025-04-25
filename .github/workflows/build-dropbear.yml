@@ -24,20 +24,20 @@ jobs:
 
     - name: Download and extract MIPS toolchain
       run: |
-        mkdir -p toolchain
         wget https://github.com/JFC-Group/JF-Buildroot/releases/download/2015.08.1/mipsel-buildroot-linux-uclibc-toolchain-2015.08.1.tar
-        tar -xf mipsel-buildroot-linux-uclibc-toolchain-2015.08.1.tar -C toolchain
+        tar -xf mipsel-buildroot-linux-uclibc-toolchain-2015.08.1.tar
 
     - name: Set environment variables
       run: |
-        echo "TOOLCHAIN_DIR=$(pwd)/toolchain/usr" >> $GITHUB_ENV
-        echo "$(pwd)/toolchain/usr/bin" >> $GITHUB_PATH
+        echo "TOOLCHAIN_DIR=$(pwd)/mipsel-buildroot-linux-uclibc-toolchain-2015.08.1/usr" >> $GITHUB_ENV
+        echo "$(pwd)/mipsel-buildroot-linux-uclibc-toolchain-2015.08.1/usr/bin" >> $GITHUB_PATH
         echo "CROSS_COMPILE=mipsel-buildroot-linux-uclibc-" >> $GITHUB_ENV
 
     - name: Build Dropbear
       run: |
-        CC=$(pwd)/toolchain/usr/bin/${CROSS_COMPILE}gcc SCPPROGRESS=1 MULTI=1 PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp" ./configure --host=mipsel-buildroot-linux-uclibc --prefix=/usr --disable-zlib || cat config.log
-        make CC=$(pwd)/toolchain/usr/bin/${CROSS_COMPILE}gcc SCPPROGRESS=1 MULTI=1 PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp"
+        ls -al .
+        CC=${CROSS_COMPILE}gcc SCPPROGRESS=1 MULTI=1 PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp" ./configure --host=mipsel-buildroot-linux-uclibc --prefix=/usr --disable-zlib || cat config.log
+        make CC=${CROSS_COMPILE}gcc SCPPROGRESS=1 MULTI=1 PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp"
 
     - name: Archive built binaries
       uses: actions/upload-artifact@v4
