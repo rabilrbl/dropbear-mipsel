@@ -36,7 +36,7 @@ jobs:
 
     - name: Build Dropbear
       run: |
-        CC=${CROSS_COMPILE}gcc SCPPROGRESS=1 MULTI=1 PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp" ./configure
+        CC=${CROSS_COMPILE}gcc SCPPROGRESS=1 MULTI=1 PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp" ./configure --host=mipsel-buildroot-linux-uclibc --prefix=/usr --disable-zlib
         make CC=${CROSS_COMPILE}gcc SCPPROGRESS=1 MULTI=1 PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp"
 
     - name: Archive built binaries
