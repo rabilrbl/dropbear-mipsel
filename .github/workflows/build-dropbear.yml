@@ -30,6 +30,7 @@ jobs:
     - name: Set environment variables
       run: |
         echo "TOOLCHAIN_DIR=$(pwd)/mipsel-buildroot-linux-uclibc-toolchain-2015.08.1/usr" >> $GITHUB_ENV
+        echo "LD_LIBRARY_PATH=$(pwd)/mipsel-buildroot-linux-uclibc-toolchain-2015.08.1/usr/lib" >> $GITHUB_ENV
         echo "$(pwd)/mipsel-buildroot-linux-uclibc-toolchain-2015.08.1/usr/bin" >> $GITHUB_PATH
         echo "CROSS_COMPILE=mipsel-buildroot-linux-uclibc-" >> $GITHUB_ENV
 
