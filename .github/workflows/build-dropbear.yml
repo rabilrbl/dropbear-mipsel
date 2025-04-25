@@ -5,6 +5,9 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build-dropbear:
     runs-on: ubuntu-latest
@@ -12,38 +15,61 @@ jobs:
 
     steps:
     - name: Checkout Dropbear source
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
+      with:
+        repository: "mkj/dropbear"
+        
 
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y wget build-essential
+        sudo apt-get install -y wget build-essential libc6-dev binutils libmpc-dev tree
 
     - name: Download and extract MIPS toolchain
       run: |
-        mkdir -p toolchain
         wget https://github.com/JFC-Group/JF-Buildroot/releases/download/2015.08.1/mipsel-buildroot-linux-uclibc-toolchain-2015.08.1.tar
-        tar -xf mipsel-buildroot-linux-uclibc-toolchain-2015.08.1.tar -C toolchain
+        tar -xf mipsel-buildroot-linux-uclibc-toolchain-2015.08.1.tar
 
     - name: Set environment variables
       run: |
-        echo "TOOLCHAIN_DIR=$(pwd)/toolchain/usr" >> $GITHUB_ENV
-        echo "$(pwd)/toolchain/usr/bin" >> $GITHUB_PATH
+        echo "TOOLCHAIN_DIR=$(pwd)/mipsel-buildroot-linux-uclibc-toolchain-2015.08.1/usr" >> $GITHUB_ENV
+        echo "LD_LIBRARY_PATH=$(pwd)/mipsel-buildroot-linux-uclibc-toolchain-2015.08.1/usr/lib" >> $GITHUB_ENV
+        echo "$(pwd)/mipsel-buildroot-linux-uclibc-toolchain-2015.08.1/usr/bin" >> $GITHUB_PATH
         echo "CROSS_COMPILE=mipsel-buildroot-linux-uclibc-" >> $GITHUB_ENV
+        echo "CFLAGS=-Os -std=c99" >> $GITHUB_ENV
 
     - name: Build Dropbear
       run: |
-        make clean
-        make CC=${CROSS_COMPILE}gcc SCPPROGRESS=1 MULTI=1 PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp"
+        CC=${CROSS_COMPILE}gcc SCPPROGRESS=1 MULTI=1 PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp" ./configure --host=mipsel-buildroot-linux-uclibc --prefix=/usr --disable-zlib || cat config.log
+        make CC=${CROSS_COMPILE}gcc SCPPROGRESS=1 PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp"
 
-    - name: Archive built binaries
-      uses: actions/upload-artifact@v3
+    - name: Read first line of CHANGES file
+      id: changelog
+      run: |
+        echo "release_name=$(head -n 1 CHANGES)" >> "$GITHUB_OUTPUT"
+
+    - name: Generate tag name (e.g. from version file or timestamp)
+      id: tag
+      run: |
+        # Example: Use current date as tag
+        TAG_NAME="release-$(date +%Y%m%d-%H%M%S)"
+        echo "tag_name=$TAG_NAME" >> "$GITHUB_OUTPUT"
+
+    - name: Create Release and Upload Binaries
+      uses: softprops/action-gh-release@v2
       with:
-        name: dropbear-mipsel
-        path: |
-          dropbearmulti
+        files: |
           dropbear
           dbclient
           dropbearkey
           dropbearconvert
           scp
+        name: Dropbear ${{ steps.changelog.outputs.release_name }}
+        generate_release_notes: true
+        tag_name: ${{ steps.tag.outputs.tag_name }}
+        make_latest: true
+        draft: false
+        prerelease: false
+        repository: rabilrbl/dropbear-mipsel
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
