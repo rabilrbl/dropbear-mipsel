@@ -36,7 +36,6 @@ jobs:
 
     - name: Build Dropbear
       run: |
-        make clean
         make CC=${CROSS_COMPILE}gcc SCPPROGRESS=1 MULTI=1 PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp"
 
     - name: Archive built binaries
