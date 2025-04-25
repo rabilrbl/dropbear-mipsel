@@ -55,16 +55,16 @@ jobs:
         TAG_NAME="release-$(date +%Y%m%d-%H%M%S)"
         echo "tag_name=$TAG_NAME" >> "$GITHUB_OUTPUT"
 
-    - name: Create Git tag
-      run: |
-        unset TOOLCHAIN_DIR 
-        unset LD_LIBRARY_PATH
-        unset CROSS_COMPILE
-        unset CFLAGS
-        git config user.name "github-actions"
-        git config user.email "github-actions@github.com"
-        git tag ${{ steps.tag.outputs.tag_name }}
-        git push origin ${{ steps.tag.outputs.tag_name }}
+    # - name: Create Git tag
+    #   run: |
+    #     unset TOOLCHAIN_DIR 
+    #     unset LD_LIBRARY_PATH
+    #     unset CROSS_COMPILE
+    #     unset CFLAGS
+    #     git config user.name "github-actions"
+    #     git config user.email "github-actions@github.com"
+    #     git tag ${{ steps.tag.outputs.tag_name }}
+    #     git push origin ${{ steps.tag.outputs.tag_name }}
 
     - name: Create Release and Upload Binaries
       uses: softprops/action-gh-release@v2
@@ -81,5 +81,6 @@ jobs:
         make_latest: true
         draft: false
         prerelease: false
+        repository: rabilrbl/gh-actions-dropbear-jf
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
