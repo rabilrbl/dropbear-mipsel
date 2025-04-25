@@ -36,12 +36,13 @@ jobs:
         echo "LD_LIBRARY_PATH=$(pwd)/mipsel-buildroot-linux-uclibc-toolchain-2015.08.1/usr/lib" >> $GITHUB_ENV
         echo "$(pwd)/mipsel-buildroot-linux-uclibc-toolchain-2015.08.1/usr/bin" >> $GITHUB_PATH
         echo "CROSS_COMPILE=mipsel-buildroot-linux-uclibc-" >> $GITHUB_ENV
-        echo "CFLAGS=-Os -std=c99" >> $GITHUB_ENV
+        echo "CFLAGS=-Os -DLTC_NO_BSWAP -std=c99" >> $GITHUB_ENV
 
     - name: Build Dropbear
       run: |
-        CC=${CROSS_COMPILE}gcc SCPPROGRESS=1 MULTI=1 PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp" ./configure --host=mipsel-buildroot-linux-uclibc --prefix=/usr --disable-zlib || cat config.log
+        CC=${CROSS_COMPILE}gcc SCPPROGRESS=1 MULTI=1 PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp" ./configure --host=mipsel-buildroot-linux-uclibc --prefix=/usr --disable-zlib --disable-syslog || cat config.log
         make CC=${CROSS_COMPILE}gcc SCPPROGRESS=1 PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp"
+        make strip
 
     - name: Read first line of CHANGES file
       id: changelog
@@ -69,7 +70,7 @@ jobs:
         tag_name: ${{ steps.tag.outputs.tag_name }}
         make_latest: true
         draft: false
-        prerelease: false
+        prerelease: ${{ github.ref_name != 'main' }}
         repository: rabilrbl/dropbear-mipsel
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
