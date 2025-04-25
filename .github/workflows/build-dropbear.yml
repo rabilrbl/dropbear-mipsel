@@ -12,7 +12,10 @@ jobs:
 
     steps:
     - name: Checkout Dropbear source
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
+      with:
+        repository: "mkj/dropbear"
+        
 
     - name: Install dependencies
       run: |
@@ -37,7 +40,7 @@ jobs:
         make CC=${CROSS_COMPILE}gcc SCPPROGRESS=1 MULTI=1 PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp"
 
     - name: Archive built binaries
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: dropbear-mipsel
         path: |
